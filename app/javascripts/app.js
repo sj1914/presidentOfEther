@@ -36,14 +36,14 @@ var Country = contract(country_artifacts);
 window.claimPresidency = function(president) {
   let presidentName = $("#presidentName").val();
   var amountPaid = $("#amountPaid").val();
-  var amountPaid = '10';
   try {
     $("#msg").html("Your offer has been submitted. Please wait to find out if you have been accepted as the new President.")
     $("#presidentName").val("");
     $("#amountPaid").val("");
 
     Country.deployed().then(function(contractInstance) {
-      contractInstance.claimPresidency(presidentName, {value: amountPaid, from: web3.eth.accounts[0], gas: 300000}).then(function() {
+      contractInstance.claimPresidency(presidentName, {value: amountPaid, from: web3.eth.accounts[1], gas: 300000}).then(function() {
+        console.log("here1")
           var tableRef = document.getElementById('past-presidents').getElementsByTagName('tbody')[0];
           var newPresidentRow   = tableRef.insertRow(0);
 
@@ -56,6 +56,7 @@ window.claimPresidency = function(president) {
           nameCell.appendChild(nameText);
           amountCell.appendChild(amountText);
           $("#msg").html("");
+          console.log("here2")
       })
     });
   } catch (err) {
