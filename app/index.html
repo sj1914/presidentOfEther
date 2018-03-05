@@ -6,8 +6,10 @@
   <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 </head>
 <body class="container">
-  <h1>Become The President of <span id="country-name"></span></h1>
-  <div class="table-responsive">
+  <h1>Become The President of <span id="country-name"></span></h1><br>
+  <h1>Current President: <span id="current-president"></span></h1><br>
+  <h1>Bribe required: <span id="bribe-required"></span></h1>
+  <!-- <div class="table-responsive">
     <table id="past-presidents" class="table table-bordered">
       <thead>
         <tr>
@@ -18,10 +20,11 @@
       <tbody>
       </tbody>
     </table>
-  </div>
+  </div> -->
   <p id="msg"></p>
-  <input type="text" id="presidentName" />
-  <input type="text" id="amountPaid" />
+  <!-- Bank Address <input type="text" id="bankAddress" /><br> -->
+  Name <input type="text" id="presidentName" /><br>
+  Amount <input type="text" id="amountPaid" />
   <a href="#" onclick="claimPresidency()" class="btn btn-primary">Become President</a>
 </body>
 <script src="https://cdn.rawgit.com/ethereum/web3.js/develop/dist/web3.js"></script>

@@ -7,59 +7,38 @@ import country_artifacts from '../../build/contracts/Country.json'
 
 var Country = contract(country_artifacts);
 
-// let candidates = {"Rama": "candidate-1", "Nick": "candidate-2", "Jose": "candidate-3"}
-
-// window.voteForCandidate = function(candidate) {
-//   let candidateName = $("#candidate").val();
-//   try {
-//     $("#msg").html("Vote has been submitted. The vote count will increment as soon as the vote is recorded on the blockchain. Please wait.")
-//     $("#candidate").val("");
-
-//      Voting.deployed() returns an instance of the contract. Every call
-//      * in Truffle returns a promise which is why we have used then()
-//      * everywhere we have a transaction call
-     
-//     Voting.deployed().then(function(contractInstance) {
-//       contractInstance.voteForCandidate(candidateName, {gas: 140000, from: web3.eth.accounts[0]}).then(function() {
-//         let div_id = candidates[candidateName];
-//         return contractInstance.totalVotesFor.call(candidateName).then(function(v) {
-//           $("#" + div_id).html(v.toString());
-//           $("#msg").html("");
-//         });
-//       });
-//     });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// }
-
 window.claimPresidency = function(president) {
   let presidentName = $("#presidentName").val();
   var amountPaid = $("#amountPaid").val();
+  // var bankAddress = $("#bankAddress").val();
   try {
-    $("#msg").html("Your offer has been submitted. Please wait to find out if you have been accepted as the new President.")
+    $("#msg").html("If your claim was successful you will appear as the current president.")
     $("#presidentName").val("");
     $("#amountPaid").val("");
 
     Country.deployed().then(function(contractInstance) {
-      contractInstance.claimPresidency(presidentName, {value: amountPaid, from: web3.eth.accounts[1], gas: 300000}).then(function() {
-        console.log("here1")
-          var tableRef = document.getElementById('past-presidents').getElementsByTagName('tbody')[0];
-          var newPresidentRow   = tableRef.insertRow(0);
+      contractInstance.claimPresidency(presidentName, {value: amountPaid, from: web3.eth.accounts[0], gas: 300000}).then(function() {
+        $("#current-president").html(presidentName);
+          // var tableRef = document.getElementById('past-presidents').getElementsByTagName('tbody')[0];
+          // var newPresidentRow   = tableRef.insertRow(0);
 
-          var nameCell  = newPresidentRow.insertCell(0);
-          var amountCell  = newPresidentRow.insertCell(1);
+          // var nameCell  = newPresidentRow.insertCell(0);
+          // var amountCell  = newPresidentRow.insertCell(1);
 
-          var nameText  = document.createTextNode(presidentName);
-          var amountText  = document.createTextNode(amountPaid);
+          // var nameText  = document.createTextNode(presidentName);
+          // var amountText  = document.createTextNode(amountPaid);
 
-          nameCell.appendChild(nameText);
-          amountCell.appendChild(amountText);
-          $("#msg").html("");
-          console.log("here2")
+          // nameCell.appendChild(nameText);
+          // amountCell.appendChild(amountText);
+          // $("#msg").html("");
       })
+      contractInstance.bribeAmount({from:web3.eth.accounts[0]}).then(bribe => {
+      console.log(bribe)
+      $("#bribe-required").html(bribe.toString());
+    });
     });
   } catch (err) {
+    $("#msg").html("Your bribe has been unsuccessful");
     console.log(err);
   }
 }
@@ -80,25 +59,37 @@ $( document ).ready(function() {
 
   Country.deployed().then(function(contractInstance) {
     contractInstance.countryName().then(function(name) {
-      $("#country-name").html(name);
+      $("#country-name").html(name.toString());
     });
   });
-  
-  // for (var i = 0; i < 3; i++) {
-  // Country.deployed().then(function(contractInstance) {
-  //   contractInstance.getPresident.call(i).then(function(v) {
-  //     console.log(v)
-  //   });
-  // });
-  // };
-  // let candidateNames = Object.keys(candidates);
-  // for (var i = 0; i < candidateNames.length; i++) {
-  //   let name = candidateNames[i];
-  //   Voting.deployed().then(function(contractInstance) {
-  //     contractInstance.totalVotesFor.call(name).then(function(v) {
-  //       $("#" + candidates[name]).html(v.toString());
-  //     });
-  //   })
-  // }
+
+  Country.deployed().then(function(contractInstance) {
+    contractInstance.bribeAmount({from:web3.eth.accounts[0]}).then(bribe => {
+      console.log(bribe)
+      $("#bribe-required").html(bribe.toString());
+    });
+  });
+
+  Country.deployed().then(function(contractInstance) {
+    contractInstance.currentPresident.call({from:web3.eth.accounts[0]}).then(function(nameDate) {
+      $("#current-president").html(nameDate[0].toString());
+    });
+  });
+
+  let numOfPresidents = 0;
+  Country.deployed().then(function(contractInstance) {
+    contractInstance.numberOfPresidents({from:web3.eth.accounts[0]}).then(number => {
+      numOfPresidents = number.toString();
+    });
+  });
+  console.log(numOfPresidents)
+
+  for (var i = 0; i < numOfPresidents; i++) {
+    Country.deployed().then(function(contractInstance) {
+    contractInstance.getPresident(i, {from:web3.eth.accounts[0]}).then(function(president) {
+      console.log(president);
+    });
+  });
+  }
 });
 

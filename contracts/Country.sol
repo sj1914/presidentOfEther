@@ -1,7 +1,12 @@
 //Democracy has broken down and as a result, the only way to gain power is to 
 //convince the current president with bribery. 
 
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+
+pragma solidity ^0.4.19;
+
 contract Country {
+    using SafeMath for uint;
     string public countryName;
     
     // They run the country 
@@ -42,7 +47,17 @@ contract Country {
         return presidents[presidents.length - 1];
     }
 
-    function getPresident(uint index) public constant 
+    function currentPresident() public constant
+    returns (string, uint) {
+        return (presidents[presidents.length - 1].name,presidents[presidents.length - 1].inaugerationDate);
+    }
+
+    function numberOfPresidents() public constant
+    returns (uint256 number) {
+        return presidents.length;
+    }
+
+    function getPresident(uint index) public 
     returns(string, address, uint, uint) {
     return (presidents[index].name, presidents[index].bank, presidents[index].inaugerationDate, presidents[index].bribeAmountWei);
     }
@@ -53,6 +68,11 @@ contract Country {
         uint newBribeAmountWei = lastBribeAmountWei + 10;
         return newBribeAmountWei;
     }
+
+    function bribeAmount() public constant
+    returns (uint256 amount) {
+        return bribeRequired();
+    }
         
     function bribeLatestPresident(uint _weiAmount) {
         address bankAddress =
@@ -60,7 +80,7 @@ contract Country {
         // record that we compensated them
         latestPresident().bribeAmountWei = _weiAmount;
         
-        bankAddress.call.value(_weiAmount);
+        bankAddress.call.value(_weiAmount).gas(23000);
     }
     
     function claimPresidency(string _presidentName) payable {
